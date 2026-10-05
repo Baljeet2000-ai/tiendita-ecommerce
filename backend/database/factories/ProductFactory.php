@@ -5,9 +5,6 @@ namespace Database\Factories;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<Product>
- */
 class ProductFactory extends Factory
 {
     protected $model = Product::class;
@@ -17,9 +14,22 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+        $names = [
+            'Audifonos inalambricos',
+            'Mochila para laptop',
+            'Teclado mecanico',
+            'Mouse ergonomico',
+            'Monitor Full HD',
+            'Power bank portatil',
+            'Bocina Bluetooth',
+            'Camara web HD',
+            'Lampara de escritorio',
+            'Silla de oficina',
+        ];
+
         return [
-            'name' => ucfirst(fake()->words(3, true)),
-            'description' => fake()->sentence(10),
+            'name' => fake()->randomElement($names).' '.fake()->word(),
+            'description' => 'Producto de alta calidad, ideal para uso diario en el hogar o la oficina.',
             'price' => fake()->randomFloat(2, 5, 500),
             'stock' => fake()->numberBetween(0, 100),
         ];
