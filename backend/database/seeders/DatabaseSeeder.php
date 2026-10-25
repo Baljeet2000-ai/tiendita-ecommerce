@@ -16,13 +16,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => Hash::make('Password.12'),
-        ]);
+        // Usuario de prueba (no depende de Faker, que es una dependencia de desarrollo)
+        User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'password' => Hash::make('Password.12'),
+                'email_verified_at' => now(),
+            ]
+        );
 
         $this->call([
             ProductSeeder::class,
