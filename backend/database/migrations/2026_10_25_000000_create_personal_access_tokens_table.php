@@ -6,11 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    // No se envuelve en transaccion: es una sola sentencia y asi evitamos
+    // problemas de transacciones con el pooler de Neon (PgBouncer).
+    public $withinTransaction = false;
+
     public function up(): void
     {
+        // El esquema de Neon ya existe y lo gestiona el equipo.
+        // Solo se crea lo que Sanctum necesita.
+        if (Schema::hasTable('personal_access_tokens')) {
+            return;
+        }
+
         Schema::create('personal_access_tokens', function (Blueprint $table) {
             $table->id();
             $table->morphs('tokenable');
@@ -23,9 +30,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('personal_access_tokens');

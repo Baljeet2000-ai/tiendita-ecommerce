@@ -22,9 +22,13 @@ RUN composer dump-autoload --no-dev --optimize --no-scripts
 ############################################
 FROM php:8.2-fpm-alpine AS runtime
 
-RUN apk add --no-cache nginx su-exec \
-    && docker-php-ext-install -j"$(nproc)" pdo_mysql opcache \
-    && for ext in pdo_mysql mbstring openssl tokenizer xml ctype json; do \
+# libpq es la libreria de ejecucion de PostgreSQL (se queda en la imagen).
+# postgresql-dev solo se necesita para compilar pdo_pgsql y se elimina despues.
+RUN apk add --no-cache nginx su-exec libpq \
+    && apk add --no-cache --virtual .build-deps postgresql-dev \
+    && docker-php-ext-install -j"$(nproc)" pdo_pgsql pdo_mysql opcache \
+    && apk del .build-deps \
+    && for ext in pdo_pgsql pdo_mysql mbstring openssl tokenizer xml ctype json; do \
          php -m | grep -qix "$ext" || { echo "Falta la extension: $ext"; exit 1; }; \
        done \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
